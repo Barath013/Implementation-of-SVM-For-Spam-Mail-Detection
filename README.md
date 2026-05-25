@@ -20,72 +20,73 @@ To write a program to implement the SVM For Spam Mail Detection.
 ## Program:
 ```
 Program to implement the SVM For Spam Mail Detection.
-Developed by: KABELAN G K
-RegisterNumber: 24900985
-```
-```
-import chardet
-file='spam.csv'
-with open(file, 'rb') as rawdata:
-    result = chardet.detect (rawdata.read(100000))
-result
-```
+Developed by: BARATH V
+RegisterNumber: 212225240023
 ```
 import pandas as pd
-data=pd.read_csv('spam.csv', encoding='Windows-1252')
-```
-```
-data.info()
-```
-```
-data.isnull().sum()
-```
-```
-x=data["v1"].values
-y=data["v2"].values
-```
-```
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train,y_test=train_test_split(x,y,test_size=0.2, random_state=0)
-```
-```
-from sklearn.feature_extraction.text import CountVectorizer
-cv = CountVectorizer()
-```
-```
-x_train=cv.fit_transform(x_train)
-x_test=cv.transform(x_test)
-```
-```
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
-svc=SVC()
-svc.fit(x_train, y_train)
-y_pred=svc.predict(x_test)
-y_pred
-```
-```
-from sklearn import metrics
-accuracy=metrics.accuracy_score(y_test,y_pred)
-accuracy
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Step 2: Load the dataset
+data = pd.read_csv("spam.csv", encoding='latin-1')
+
+# Step 3: Keep only required columns
+data = data[['v1', 'v2']]
+data.columns = ['label', 'message']
+
+
+
+# Step 4: Convert labels to numeric
+# ham = 0, spam = 1
+data['label_num'] = data['label'].map({'ham': 0, 'spam': 1})
+
+# Step 5: Separate features and target
+X = data['message']
+y = data['label_num']
+
+# Step 6: Convert text to numerical features using TF-IDF Term Frequency–Inverse Document Frequency
+vectorizer = TfidfVectorizer(stop_words='english') #remove common words like is, are
+X_tfidf = vectorizer.fit_transform(X)
+
+
+# Step 7: Split into Training and Testing data
+X_train, X_test, y_train, y_test = train_test_split(
+    X_tfidf, y, test_size=0.2, random_state=42
+)
+
+# Step 8: Train SVM Model
+svm_model = SVC(kernel='linear')
+svm_model.fit(X_train, y_train)
+
+# Step 9: Predict on Test Data
+y_pred = svm_model.predict(X_test)
+user_message = input("\nEnter a message to check whether it is Spam or Ham:\n")
+
+# Convert user message into TF-IDF features
+user_tfidf = vectorizer.transform([user_message])
+
+# Predict using trained SVM model
+prediction = svm_model.predict(user_tfidf)
+
+# Display result
+if prediction[0] == 1:
+    print("\n This message is SPAM")
+else:
+    print("\n This message is HAM (Not Spam)")
+# Step 10: Evaluate the Model
+accuracy = accuracy_score(y_test, y_pred)
+
+print("\n🔹 SVM Spam Mail Detection Results")
+print("Accuracy:", accuracy)
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
 ```
 
 ## Output:
-![image](https://github.com/user-attachments/assets/ba42ca2d-85a5-4795-b40d-63df37236a81)
+<img width="637" height="495" alt="image" src="https://github.com/user-attachments/assets/7ab0cc85-df39-40f3-9239-b38833c8da43" />
 
-
-![image](https://github.com/user-attachments/assets/22edcf48-dd25-4513-867d-6c7430da985d)
-
-
-![image](https://github.com/user-attachments/assets/618324db-35cd-4c45-8469-466a22c5cf86)
-
-
-![image](https://github.com/user-attachments/assets/81bc5619-eb01-41f1-9218-e95a64875d42)
-
-
-![image](https://github.com/user-attachments/assets/6836f245-d141-4e8b-8bfa-e2d8eac18a76)
-
-
-![image](https://github.com/user-attachments/assets/3da73419-4d11-45bf-b361-b1fd344e732e)
 
 
 
