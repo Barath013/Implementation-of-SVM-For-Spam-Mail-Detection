@@ -23,6 +23,7 @@ Program to implement the SVM For Spam Mail Detection.
 Developed by: BARATH V
 RegisterNumber: 212225240023
 ```
+```
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
